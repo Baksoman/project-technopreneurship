@@ -10,15 +10,16 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('build_ratings', function (Blueprint $table) {
+        Schema::create('build_components', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->foreignUuid('build_id')->constrained()->cascadeOnDelete();
-            $table->foreignUuid('user_id')->constrained()->cascadeOnDelete();
-            $table->tinyInteger('rating');          // 1–5
-            $table->text('comment')->nullable();
+            $table->foreignUuid('component_id')->constrained()->cascadeOnDelete();
+            $table->integer('quantity')->default(1);
+            $table->decimal('price_at_time', 12, 2);    // harga saat build dibuat
+            $table->string('marketplace')->nullable();   // dari marketplace mana
             $table->timestamps();
 
-            $table->unique(['build_id', 'user_id']);
+            $table->unique(['build_id', 'component_id']);
         });
     }
 
@@ -27,6 +28,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('build_ratings');
+        Schema::dropIfExists('build_components');
     }
 };
