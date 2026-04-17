@@ -16,12 +16,14 @@ class BuildRecommenderService
     ) {
     }
 
-    public function recommend(int $budget, string $useCase, string $brandPreference = 'any', bool $includePsu = true): array
+    public function recommend(int $budget, string $useCase, string $brandPreference = 'any', bool $includeGpu = true, bool $includePsu = true): array
     {
         $rules = RecommendationRule::where('use_case', $useCase)->orderBy('priority')->get();
         $selectedComponents = [];
 
         foreach ($rules as $rule) {
+            if (!$includeGpu && $rule->category_slug === 'gpu')
+                continue;
             if (!$includePsu && $rule->category_slug === 'psu')
                 continue;
 
