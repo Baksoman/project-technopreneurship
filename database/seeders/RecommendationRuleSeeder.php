@@ -46,7 +46,7 @@ class RecommendationRuleSeeder extends Seeder
         ];
 
         foreach ($rules as $rule) {
-            RecommendationRule::create(['id' => Str::uuid(), ...$rule, 'scoring_weights' => json_encode($rule['scoring_weights'])]);
+            RecommendationRule::create(['id' => Str::uuid(), ...$rule]);
         }
     }
 }

@@ -11,14 +11,14 @@ class ComponentCategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            ['name' => 'CPU', 'slug' => 'cpu', 'icon' => 'cpu'],
-            ['name' => 'GPU', 'slug' => 'gpu', 'icon' => 'gpu'],
-            ['name' => 'Motherboard', 'slug' => 'motherboard', 'icon' => 'motherboard'],
-            ['name' => 'RAM', 'slug' => 'ram', 'icon' => 'ram'],
-            ['name' => 'Storage', 'slug' => 'storage', 'icon' => 'storage'],
-            ['name' => 'PSU', 'slug' => 'psu', 'icon' => 'psu'],
-            ['name' => 'Case', 'slug' => 'case', 'icon' => 'case'],
-            ['name' => 'Cooler', 'slug' => 'cooler', 'icon' => 'cooler'],
+            ['name' => 'CPU', 'icon' => 'cpu'],
+            ['name' => 'GPU', 'icon' => 'gpu'],
+            ['name' => 'Motherboard', 'icon' => 'motherboard'],
+            ['name' => 'RAM', 'icon' => 'ram'],
+            ['name' => 'Storage', 'icon' => 'storage'],
+            ['name' => 'PSU', 'icon' => 'psu'],
+            ['name' => 'Case', 'icon' => 'case'],
+            ['name' => 'Cooler', 'icon' => 'cooler'],
         ];
 
         foreach ($categories as $category) {
