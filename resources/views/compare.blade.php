@@ -10,7 +10,7 @@
         </p>
     </div>
 
-    @livewire('build-comparison')
+    @livewire('build-comparison', ['buildIdA' => request('buildA')])
 </div>
 
 @endsection
