@@ -3,7 +3,7 @@
 @section('title', 'Profile')
 
 @section('content')
-<div class="max-w-md mx-auto">
+<div class="max-w-4xl mx-auto">
     {{-- Avatar & Name --}}
     <div class="text-center mb-6">
         <div class="w-24 h-24 rounded-full bg-terracotta/20 mx-auto mb-4 flex items-center justify-center">

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Buildr — @yield('title', 'Rakit PC Terbaik')</title>
+    <title>Buildr | @yield('title', 'Rakit PC Terbaik')</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
     <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -91,9 +91,23 @@
 
             <a href="{{ route('welcome') }}" wire:navigate class="nav-item {{ $active === 0 ? 'active' : '' }}">
                 <div class="nav-icon-wrap">
-                    <svg viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-cpu-icon lucide-cpu">
+                        <path d="M12 20v2" />
+                        <path d="M12 2v2" />
+                        <path d="M17 20v2" />
+                        <path d="M17 2v2" />
+                        <path d="M2 12h2" />
+                        <path d="M2 17h2" />
+                        <path d="M2 7h2" />
+                        <path d="M20 12h2" />
+                        <path d="M20 17h2" />
+                        <path d="M20 7h2" />
+                        <path d="M7 20v2" />
+                        <path d="M7 2v2" />
+                        <rect x="4" y="4" width="16" height="16" rx="2" />
+                        <rect x="8" y="8" width="8" height="8" rx="1" />
                     </svg>
                 </div>
                 <span class="nav-label">Build</span>
@@ -109,11 +123,19 @@
                 <span class="nav-label">Compatibility</span>
             </a>
 
+            <div class="bg-parchment w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center mb-3 sm:mb-2 mx-1">
+                <p class="text-black font-bold text-[0.7rem] sm:text-sm">Buildr</p>
+            </div>
+
             <a href="{{ route('compare') }}" wire:navigate class="nav-item {{ $active === 2 ? 'active' : '' }}">
                 <div class="nav-icon-wrap">
-                    <svg viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                        class="lucide lucide-git-compare-icon lucide-git-compare">
+                        <circle cx="18" cy="18" r="3" />
+                        <circle cx="6" cy="6" r="3" />
+                        <path d="M13 6h3a2 2 0 0 1 2 2v7" />
+                        <path d="M11 18H8a2 2 0 0 1-2-2V9" />
                     </svg>
                 </div>
                 <span class="nav-label">Compare</span>
@@ -122,9 +144,11 @@
             @if(session('user_id'))
                 <a href="{{ route('profile') }}" wire:navigate class="nav-item {{ $active === 3 ? 'active' : '' }}">
                     <div class="nav-icon-wrap">
-                        <svg viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-user-icon lucide-user">
+                            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                            <circle cx="12" cy="7" r="4" />
                         </svg>
                     </div>
                     <span class="nav-label">Profile</span>
