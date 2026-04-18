@@ -16,8 +16,10 @@ return new class extends Migration {
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('google_id')->nullable()->unique();
             $table->enum('role', ['user', 'premium', 'admin'])->default('user');
             $table->enum('experience_level', ['beginner', 'enthusiast', 'expert'])->default('beginner');
+            $table->boolean('is_active')->default(true);
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();
