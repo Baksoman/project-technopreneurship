@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class BuildComponent extends Model
 {
@@ -18,6 +19,9 @@ class BuildComponent extends Model
         'price_at_time',
         'marketplace',
     ];
+
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     protected $casts = [
         'price_at_time' => 'decimal:2',

@@ -15,8 +15,8 @@ return new class extends Migration {
             $table->foreignUuid('build_id')->constrained()->cascadeOnDelete();
             $table->foreignUuid('component_id')->constrained()->cascadeOnDelete();
             $table->integer('quantity')->default(1);
-            $table->decimal('price_at_time', 12, 2);    // harga saat build dibuat
-            $table->string('marketplace')->nullable();   // dari marketplace mana
+            $table->decimal('price_at_time', 12, 2);
+            $table->string('marketplace')->nullable();
             $table->timestamps();
 
             $table->unique(['build_id', 'component_id']);
