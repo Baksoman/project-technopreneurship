@@ -62,9 +62,15 @@ class BottleneckAnalyzer
     protected function analyzePsuCapacity(array $components): array
     {
         $psu = $components['psu'] ?? null;
+        
+        // Jika PSU tidak ada (user sudah punya), skip analisis
         if (!$psu) return [];
 
         $psuWatt = $psu->specs['wattage'] ?? 0;
+        
+        // Jika wattage tidak valid, skip
+        if ($psuWatt <= 0) return [];
+        
         $totalTdp = collect($components)->filter(fn($c) => $c->tdp !== null)->sum('tdp');
         $requiredWatt = $totalTdp * 1.20;
 
@@ -86,9 +92,15 @@ class BottleneckAnalyzer
     protected function analyzeRamBottleneck(array $components): array
     {
         $ram = $components['ram'] ?? null;
+        
+        // Jika RAM tidak ada, skip analisis
         if (!$ram) return [];
 
         $capacity = (int) filter_var($ram->specs['capacity'] ?? '0', FILTER_SANITIZE_NUMBER_INT);
+        
+        // Jika capacity tidak valid, skip
+        if ($capacity <= 0) return [];
+        
         if ($capacity < 16) {
             return [[
                 'severity' => 'medium',
