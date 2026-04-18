@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\User;
 
 use App\Services\BuildRecommenderService;
 use App\Services\Scoring\ComponentScorer;
@@ -100,6 +100,6 @@ class BuildComparison extends Component
     public function render()
     {
         $savedBuilds = session()->has('user_id') ? Build::where('user_id', session('user_id'))->latest()->get() : collect();
-        return view('livewire.build-comparison', compact('savedBuilds'));
+        return view('livewire.user.build-comparison', compact('savedBuilds'));
     }
 }

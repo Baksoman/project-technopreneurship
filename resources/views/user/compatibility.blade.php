@@ -11,7 +11,7 @@
         </div>
 
         <div class="bg-white rounded-2xl p-8 border border-charcoal/8 shadow-sm">
-            @livewire('compatibility-checker', ['buildId' => request('build')])
+            @livewire('user.compatibility-checker', ['buildId' => request('build')])
         </div>
     </div>
 

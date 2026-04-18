@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\User;
 
 use App\Services\BuildRecommenderService;
 use App\Services\Scoring\ComponentScorer;
@@ -73,7 +73,7 @@ class BuildRecommender extends Component
     {
         if (!session()->has('user_id')) {
             session()->flash('error', 'Login dulu untuk simpan build.');
-            $this->redirect('/login');
+            $this->redirect(route('login'));
             return;
         }
 
@@ -113,6 +113,6 @@ class BuildRecommender extends Component
 
     public function render()
     {
-        return view('livewire.build-recommender');
+        return view('livewire.user.build-recommender');
     }
 }

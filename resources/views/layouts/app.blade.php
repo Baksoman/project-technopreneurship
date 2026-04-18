@@ -89,7 +89,7 @@
     <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-sm">
         <div class="flex items-end justify-around rounded-full px-4 py-2 shadow-2xl" style="background:#1e1e1e">
 
-            <a href="{{ route('welcome') }}" wire:navigate class="nav-item {{ $active === 0 ? 'active' : '' }}">
+            <a href="{{ route('build') }}" wire:navigate class="nav-item {{ $active === 0 ? 'active' : '' }}">
                 <div class="nav-icon-wrap">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round"

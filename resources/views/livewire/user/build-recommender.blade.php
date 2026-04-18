@@ -260,11 +260,11 @@
 
                 {{-- Actions --}}
                 <div class="grid grid-cols-2 gap-3">
-                    <a href="/compatibility" class="py-3 rounded-xl border border-charcoal/20 text-center text-sm
+                    <a href="{{ route('compatibility') }}" wire:navigate class="py-3 rounded-xl border border-charcoal/20 text-center text-sm
                                font-medium text-charcoal hover:bg-charcoal/5 transition">
                         Cek Kompatibilitas
                     </a>
-                    <a href="/compare" class="py-3 rounded-xl border border-charcoal/20 text-center text-sm
+                    <a href="{{ route('compare') }}" wire:navigate class="py-3 rounded-xl border border-charcoal/20 text-center text-sm
                                font-medium text-charcoal hover:bg-charcoal/5 transition">
                         Bandingkan Build
                     </a>

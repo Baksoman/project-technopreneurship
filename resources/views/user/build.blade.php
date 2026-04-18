@@ -18,7 +18,7 @@
     <h2 class="text-xl md:text-3xl font-bold text-center text-charcoal mb-10">
         Smart Builder
     </h2>
-    @livewire('build-recommender')
+    @livewire('user.build-recommender')
 </div>
 
 @endsection

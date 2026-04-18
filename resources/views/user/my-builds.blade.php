@@ -10,7 +10,7 @@
         </p>
     </div>
 
-    @livewire('my-builds')
+    @livewire('user.my-builds')
 </div>
 
 @endsection

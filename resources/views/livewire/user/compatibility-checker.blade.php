@@ -31,7 +31,7 @@
                         @endforeach
                     </select>
                 @else
-                    <p class="text-sm text-charcoal/50 text-center py-8">Belum ada build tersimpan. <a href="{{ route('build') }}" class="text-terracotta hover:underline">Buat build dulu</a></p>
+                    <p class="text-sm text-charcoal/50 text-center py-8">Belum ada build tersimpan. <a href="{{ route('.build') }}" class="text-terracotta hover:underline">Buat build dulu</a></p>
                 @endif
             @else
                 <p class="text-sm text-charcoal/50 text-center py-8">Login dulu untuk akses build tersimpan. <a href="{{ route('login') }}" class="text-terracotta hover:underline">Login</a></p>

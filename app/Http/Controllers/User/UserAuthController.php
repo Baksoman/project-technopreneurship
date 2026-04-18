@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -15,9 +15,9 @@ class UserAuthController extends Controller
     public function showAuth()
     {
         if (session()->has('user_id')) {
-            return redirect()->route('welcome');
+            return redirect()->route('build');
         }
-        return view('auth.user-auth');
+        return view('user.auth');
     }
 
     public function login(Request $request)
@@ -38,7 +38,7 @@ class UserAuthController extends Controller
                 'last_activity_time' => time()
             ]);
 
-            return redirect()->intended(route('welcome'))->with('success', 'Login berhasil! Selamat datang, ' . $user->name);
+            return redirect()->intended(route('build'))->with('success', 'Login berhasil! Selamat datang, ' . $user->name);
         }
 
         return back()->with('error', 'Email atau password salah')->onlyInput('email');
@@ -72,14 +72,14 @@ class UserAuthController extends Controller
             'last_activity_time' => time()
         ]);
 
-        return redirect(route('welcome'))->with('success', 'Registrasi berhasil! Selamat datang, ' . $user->name);
+        return redirect(route('build'))->with('success', 'Registrasi berhasil! Selamat datang, ' . $user->name);
     }
 
     public function logout(Request $request)
     {
         $request->session()->flush();
         $request->session()->regenerate();
-        return redirect(route('welcome'))->with('info', 'Anda telah logout. Sampai jumpa lagi!');
+        return redirect(route('build'))->with('info', 'Anda telah logout. Sampai jumpa lagi!');
     }
 
     public function redirectToGoogle()
@@ -125,7 +125,7 @@ class UserAuthController extends Controller
             ]);
             request()->session()->regenerate();
 
-            return redirect(route('welcome'))->with('success', 'Login berhasil, Selamat datang, ' . $user->name);
+            return redirect(route('build'))->with('success', 'Login berhasil, Selamat datang, ' . $user->name);
 
         } catch (\Exception $e) {
             return redirect()->route('auth')->with('error', 'Login gagal');

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\User;
 
 use App\Models\Component;
 use App\Models\ComponentCategory;
@@ -105,6 +105,6 @@ class CompatibilityChecker extends LivewireComponent
     {
         $categories = ComponentCategory::with(['components' => fn($q) => $q->where('is_active', true)->orderBy('name')])->get();
         $savedBuilds = session()->has('user_id') ? Build::where('user_id', session('user_id'))->latest()->get() : collect();
-        return view('livewire.compatibility-checker', compact('categories', 'savedBuilds'));
+        return view('livewire.user.compatibility-checker', compact('categories', 'savedBuilds'));
     }
 }

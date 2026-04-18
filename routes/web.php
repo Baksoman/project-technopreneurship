@@ -1,13 +1,13 @@
 <?php
 
-use App\Http\Controllers\Auth\UserAuthController;
-use App\Http\Controllers\Auth\AdminAuthController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\User\UserAuthController;
+use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\User\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn() => view('welcome'))->name('welcome');
-Route::get('/compatibility', fn() => view('compatibility'))->name('compatibility');
-Route::get('/compare', fn() => view('compare'))->name('compare');
+Route::get('/', fn() => view('user.build'))->name('build');
+Route::get('/compatibility', fn() => view('user.compatibility'))->name('compatibility');
+Route::get('/compare', fn() => view('user.compare'))->name('compare');
 
 // User Auth Routes
 Route::get('/auth', [UserAuthController::class, 'showAuth'])->name('auth');
@@ -27,6 +27,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 Route::middleware('auth.session')->group(function () {
-    Route::get('/my-builds', fn() => view('my-builds'))->name('my-builds');
+    Route::get('/my-builds', fn() => view('user.my-builds'))->name('my-builds');
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
 });

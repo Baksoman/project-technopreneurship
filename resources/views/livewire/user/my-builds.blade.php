@@ -8,7 +8,7 @@
     @if($builds->isEmpty())
         <div class="text-center py-12">
             <p class="text-charcoal/50 mb-4">Belum ada build tersimpan</p>
-            <a href="/" class="inline-block px-6 py-3 bg-terracotta text-white rounded-xl hover:bg-terracotta/90 transition">
+            <a href="{{ route('build') }}" class="inline-block px-6 py-3 bg-terracotta text-white rounded-xl hover:bg-terracotta/90 transition">
                 Buat Build Pertama
             </a>
         </div>
@@ -44,11 +44,11 @@
                     </div>
 
                     <div class="flex gap-2">
-                        <a href="/compatibility?build={{ $build->id }}" 
+                        <a href="{{ route('compatibility', ['build' => $build->id]) }}" wire:navigate 
                            class="flex-1 py-2 text-center text-sm border border-charcoal/20 rounded-lg hover:bg-charcoal/5 transition">
                             Cek Kompatibilitas
                         </a>
-                        <a href="/compare?buildA={{ $build->id }}" 
+                        <a href="{{ route('compare', ['buildA' => $build->id]) }}" wire:navigate 
                            class="flex-1 py-2 text-center text-sm border border-charcoal/20 rounded-lg hover:bg-charcoal/5 transition">
                             Bandingkan
                         </a>

@@ -43,7 +43,7 @@
 
     {{-- Menu List --}}
     <div class="bg-white rounded-2xl border border-charcoal/10 overflow-hidden mb-4">
-        <a href="{{ route('my-builds') }}" class="flex items-center justify-between px-6 py-4 hover:bg-charcoal/5 transition border-b border-charcoal/10">
+        <a href="{{ route('my-builds') }}" wire:navigate class="flex items-center justify-between px-6 py-4 hover:bg-charcoal/5 transition border-b border-charcoal/10">
             <div class="flex items-center gap-4">
                 <div class="w-10 h-10 rounded-xl bg-terracotta/10 flex items-center justify-center">
                     <svg class="w-5 h-5 text-terracotta" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire;
+namespace App\Livewire\User;
 
 use App\Models\Build;
 use Illuminate\Support\Facades\Auth;
@@ -25,6 +25,6 @@ class MyBuilds extends Component
             ->latest()
             ->get();
 
-        return view('livewire.my-builds', compact('builds'));
+        return view('livewire.user.my-builds', compact('builds'));
     }
 }
