@@ -8,7 +8,7 @@
             <label class="block text-sm font-medium text-charcoal mb-2">Budget kamu berapa?</label>
             <div class="relative">
                 <span class="absolute left-4 top-1/2 -translate-y-1/2 text-charcoal/40 text-sm">Rp</span>
-                <input type="number" wire:model.blur="budget" placeholder="5000000"
+                <input type="number" wire:model.blur="budget" placeholder="0"
                     class="w-full pl-10 pr-4 py-3 rounded-xl border border-charcoal/10 bg-white
                            focus:outline-none focus:border-terracotta transition text-charcoal"/>
             </div>

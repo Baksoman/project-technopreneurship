@@ -17,7 +17,7 @@ class BuildComparison extends Component
     public ?string $savedBuildIdB = null;
 
     // Build A (new)
-    public int $budgetA = 5000000;
+    public int $budgetA = 0;
     public string $useCaseA = 'gaming';
     public string $brandPreferenceA = 'any';
     public string $modeA_build = 'balanced'; // 'balanced' | 'max_budget'
@@ -25,7 +25,7 @@ class BuildComparison extends Component
     public bool $includePsuA = true;
 
     // Build B (new)
-    public int $budgetB = 8000000;
+    public int $budgetB = 0;
     public string $useCaseB = 'gaming';
     public string $brandPreferenceB = 'any';
     public string $modeB_build = 'balanced'; // 'balanced' | 'max_budget'

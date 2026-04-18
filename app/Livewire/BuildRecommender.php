@@ -10,7 +10,7 @@ use Livewire\Component;
 
 class BuildRecommender extends Component
 {
-    public int $budget = 5000000;
+    public int $budget = 0;
     public string $useCase = 'gaming';
     public string $brandPreference = 'any';
     public string $mode = 'balanced'; // 'balanced' | 'max_budget'
