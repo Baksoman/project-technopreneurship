@@ -6,7 +6,7 @@
         <div class="mb-8">
             <h1 class="text-3xl font-semibold text-charcoal">Compatibility Checker</h1>
             <p class="text-charcoal/50 mt-2">
-                Pilih komponen yang ingin kamu cek - kami akan tunjukkan apakah semuanya cocok.
+                Pilih komponen yang ingin kamu cek dan kami akan tunjukkan apakah semuanya cocok.
             </p>
         </div>
 
