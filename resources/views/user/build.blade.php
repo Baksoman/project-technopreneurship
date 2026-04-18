@@ -2,6 +2,8 @@
 @section('title', 'Home')
 @section('content')
 
+@livewire('user.onboarding-modal')
+
 {{-- Hero --}}
 <div class="text-center max-w-xl mx-auto mb-12">
     <h1 class="text-4xl font-semibold text-charcoal leading-tight mb-4">
