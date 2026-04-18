@@ -124,9 +124,9 @@ class CompatibilityRuleSeeder extends Seeder
         $rules[] = [$r5600x, $b550_gigabyte, 'compatible', 'Pasangan yang bagus', null];
         $rules[] = [$r5600x, $x570_asrock, 'compatible', 'Berjalan di X570, ada banyak fitur', null];
         $rules[] = [$r5600x, $b450_msi, 'compatible', 'Bisa digunakan, butuh update BIOS terlebih dulu', 'Pastikan update BIOS MSI B450M ke versi terbaru sebelum pemasangan Ryzen 5000 series'];
-        $rules[] = [$r5600x, $b650_gigabyte, 'incompatible', 'Socket tidak cocok — AM4 vs AM5', 'Ryzen 5600X menggunakan socket AM4. Gunakan motherboard AM4 seperti B550 atau X570'];
-        $rules[] = [$r5600x, $b760_msi_ddr4, 'incompatible', 'Socket tidak cocok — AM4 vs LGA1700', 'Ryzen 5600X adalah CPU AMD AM4, tidak kompatibel dengan motherboard Intel LGA1700'];
-        $rules[] = [$r5600x, $z890_asus, 'incompatible', 'Socket tidak cocok — AM4 vs LGA1851', 'Ryzen 5600X menggunakan socket AM4, bukan LGA1851'];
+        $rules[] = [$r5600x, $b650_gigabyte, 'incompatible', 'Socket tidak cocok - AM4 vs AM5', 'Ryzen 5600X menggunakan socket AM4. Gunakan motherboard AM4 seperti B550 atau X570'];
+        $rules[] = [$r5600x, $b760_msi_ddr4, 'incompatible', 'Socket tidak cocok - AM4 vs LGA1700', 'Ryzen 5600X adalah CPU AMD AM4, tidak kompatibel dengan motherboard Intel LGA1700'];
+        $rules[] = [$r5600x, $z890_asus, 'incompatible', 'Socket tidak cocok - AM4 vs LGA1851', 'Ryzen 5600X menggunakan socket AM4, bukan LGA1851'];
 
         // AMD Ryzen 5600G (AM4, has iGPU)
         $rules[] = [$r5600g, $b550_asus, 'compatible', 'Cocok, iGPU Vega 7 aktif tanpa GPU diskrit', null];
@@ -138,7 +138,7 @@ class CompatibilityRuleSeeder extends Seeder
         $rules[] = [$r5700x, $x570_asrock, 'compatible', 'Berjalan optimal di X570', null];
         $rules[] = [$r5700x, $b650_gigabyte, 'incompatible', 'Socket tidak cocok', 'Ryzen 5700X butuh motherboard AM4'];
 
-        // AMD Ryzen 5800X3D (AM4) — catatan penting: tidak bisa di-overclock
+        // AMD Ryzen 5800X3D (AM4) - catatan penting: tidak bisa di-overclock
         $rules[] = [$r5800x3d, $b550_asus, 'compatible', 'Berjalan baik, perlu BIOS terbaru', 'Ryzen 5800X3D tidak support overclocking manual. Gunakan BIOS terbaru untuk stabilitas'];
         $rules[] = [$r5800x3d, $x570_asrock, 'compatible', 'X570 support 3D V-Cache dengan baik', null];
         $rules[] = [$r5800x3d, $b650_gigabyte, 'incompatible', 'Socket AM4 tidak kompatibel dengan AM5', null];
@@ -153,7 +153,7 @@ class CompatibilityRuleSeeder extends Seeder
         $rules[] = [$r7600x, $b650_msi, 'compatible', 'Kompatibel, form factor mATX', null];
         $rules[] = [$r7600x, $x670e_asus, 'compatible', 'X670E overkill untuk 7600X, tapi berjalan sempurna', null];
         $rules[] = [$r7600x, $b550_asus, 'incompatible', 'Socket AM5 tidak cocok dengan AM4', 'Ryzen 7600X menggunakan socket AM5. Gunakan motherboard AM5 seperti B650 atau X670'];
-        $rules[] = [$r7600x, $b760_msi_ddr4, 'incompatible', 'Socket tidak cocok — AM5 vs LGA1700', 'Ryzen 7600X adalah CPU AMD, tidak kompatibel dengan motherboard Intel'];
+        $rules[] = [$r7600x, $b760_msi_ddr4, 'incompatible', 'Socket tidak cocok - AM5 vs LGA1700', 'Ryzen 7600X adalah CPU AMD, tidak kompatibel dengan motherboard Intel'];
 
         // AMD Ryzen 7600 (AM5)
         $rules[] = [$r7600, $b650_gigabyte, 'compatible', 'Kombinasi hemat daya yang efisien', null];
@@ -164,22 +164,22 @@ class CompatibilityRuleSeeder extends Seeder
         $rules[] = [$r7700x, $x670e_asus, 'compatible', 'X670E memberikan headroom penuh untuk 7700X', null];
         $rules[] = [$r7700x, $b650e_asrock, 'compatible', 'B650E support PCIe 5.0 untuk SSD kencang', null];
 
-        // AMD Ryzen 7800X3D (AM5) — raja gaming
+        // AMD Ryzen 7800X3D (AM5) - raja gaming
         $rules[] = [$r7800x3d, $b650_gigabyte, 'compatible', 'Kombinasi terbaik untuk gaming saat ini', null];
         $rules[] = [$r7800x3d, $x670e_asus, 'compatible', 'Berjalan sempurna di X670E', null];
         $rules[] = [$r7800x3d, $b650e_asrock, 'compatible', 'B650E cocok untuk 7800X3D', null];
         $rules[] = [$r7800x3d, $b550_asus, 'incompatible', 'Socket AM5 tidak cocok dengan AM4', null];
 
-        // AMD Ryzen 9 7900X (AM5) — TDP tinggi, perlu VRM kuat
+        // AMD Ryzen 9 7900X (AM5) - TDP tinggi, perlu VRM kuat
         $rules[] = [$r7900x, $x670e_asus, 'compatible', 'X670E sangat disarankan untuk Ryzen 9', null];
         $rules[] = [$r7900x, $b650_gigabyte, 'warning', 'VRM B650 mungkin terbatas untuk Ryzen 9 7900X', 'Ryzen 9 7900X TDP 170W sangat tinggi. Pantau suhu VRM saat full load, pertimbangkan X670E'];
         $rules[] = [$r7900x, $b650_msi, 'warning', 'mATX dengan TDP 170W berisiko thermal throttle', 'Ryzen 9 7900X tidak disarankan di board mATX entry-level, upgrade ke X670E ATX'];
 
-        // AMD Ryzen 9 7950X3D (AM5) — flagship
+        // AMD Ryzen 9 7950X3D (AM5) - flagship
         $rules[] = [$r7950x3d, $x670e_asus, 'compatible', 'Pasangan flagship yang sempurna', null];
         $rules[] = [$r7950x3d, $b650_gigabyte, 'warning', 'VRM B650 kurang ideal untuk 7950X3D', 'Ryzen 9 7950X3D TDP 120W tetapi bisa spike tinggi. Gunakan X670E untuk keandalan maksimal'];
 
-        // Intel Core i3-12100F (LGA1700, no iGPU) — WAJIB pakai GPU diskrit
+        // Intel Core i3-12100F (LGA1700, no iGPU) - WAJIB pakai GPU diskrit
         $rules[] = [$i3_12100f, $b760_msi_ddr4, 'compatible', 'Budget build yang solid', null];
         $rules[] = [$i3_12100f, $b760_gigabyte, 'compatible', 'Berjalan baik dengan DDR4', null];
         $rules[] = [$i3_12100f, $b660_asrock, 'compatible', 'Budget mATX yang cocok', null];
@@ -197,7 +197,7 @@ class CompatibilityRuleSeeder extends Seeder
         $rules[] = [$i5_12400f, $b760_gigabyte, 'compatible', 'Berjalan sangat baik dengan DDR4', null];
         $rules[] = [$i5_12400f, $b660_asrock, 'compatible', 'Budget gaming build yang bagus', null];
         $rules[] = [$i5_12400f, $z790_msi, 'warning', 'Z790 terlalu mahal untuk i5-12400F', 'Gunakan B660 atau B760 yang lebih sesuai anggaran dengan i5-12400F'];
-        $rules[] = [$i5_12400f, $b550_asus, 'incompatible', 'Socket tidak cocok — LGA1700 vs AM4', null];
+        $rules[] = [$i5_12400f, $b550_asus, 'incompatible', 'Socket tidak cocok - LGA1700 vs AM4', null];
 
         // Intel Core i5-13400F (LGA1700, no iGPU)
         $rules[] = [$i5_13400f, $b760_msi_ddr4, 'compatible', 'Kombinasi gaming mainstream yang bagus', null];
@@ -217,7 +217,7 @@ class CompatibilityRuleSeeder extends Seeder
         $rules[] = [$i7_13700k, $b760_msi_ddr4, 'warning', 'i7-13700K kehilangan kemampuan OC di B760', 'i7-13700K adalah CPU unlocked (K), tapi B760 tidak mendukung overclocking. Gunakan Z790 untuk performa penuh'];
         $rules[] = [$i7_13700k, $b660_asrock, 'warning', 'B660 VRM kurang ideal untuk i7-13700K 125W', 'TDP i7-13700K mencapai 125W+, VRM B660 entry-level mungkin tidak stabil di full load'];
 
-        // Intel Core i9-13900K (LGA1700) — power hungry
+        // Intel Core i9-13900K (LGA1700) - power hungry
         $rules[] = [$i9_13900k, $z790_asus, 'compatible', 'Pasangan flagship yang optimal', null];
         $rules[] = [$i9_13900k, $z790_msi, 'compatible', 'Z790 Tomahawk bisa handle i9-13900K dengan baik', null];
         $rules[] = [$i9_13900k, $b760_msi_ddr4, 'incompatible', 'B760 tidak mendukung overclocking i9-13900K', 'i9-13900K membutuhkan Z-series chipset untuk OC dan VRM yang kuat. B760 tidak cocok'];
@@ -274,7 +274,7 @@ class CompatibilityRuleSeeder extends Seeder
         $rules[] = [$b650e_asrock, $ddr5_gskill_32, 'compatible', 'B650E support DDR5 dengan baik', null];
         $rules[] = [$b650e_asrock, $ddr4_corsair_16, 'incompatible', 'B650E hanya support DDR5', null];
 
-        // Intel LGA1700 boards — bervariasi DDR4 atau DDR5 tergantung model
+        // Intel LGA1700 boards - bervariasi DDR4 atau DDR5 tergantung model
         $rules[] = [$b760_msi_ddr4, $ddr4_corsair_16, 'compatible', 'DDR4 3200MHz berjalan baik di B760', null];
         $rules[] = [$b760_msi_ddr4, $ddr4_gskill_16, 'compatible', 'DDR4 3600MHz dengan XMP aktif', null];
         $rules[] = [$b760_msi_ddr4, $ddr5_gskill_32, 'incompatible', 'MSI PRO B760M-A varian DDR4 tidak support DDR5', 'Pastikan membeli MSI PRO B760M-A varian DDR5 jika ingin menggunakan RAM DDR5'];
@@ -298,7 +298,7 @@ class CompatibilityRuleSeeder extends Seeder
         $rules[] = [$b660_asrock, $ddr4_corsair_16, 'compatible', 'DDR4 support di B660M Pro RS', null];
         $rules[] = [$b660_asrock, $ddr5_gskill_32, 'incompatible', 'B660M Pro RS DDR4 tidak support DDR5', null];
 
-        // Intel LGA1851 boards (Z890) — hanya DDR5
+        // Intel LGA1851 boards (Z890) - hanya DDR5
         $rules[] = [$z890_asus, $ddr5_gskill_32, 'compatible', 'DDR5 6000MHz berjalan optimal di Z890', null];
         $rules[] = [$z890_asus, $ddr5_corsair_32, 'compatible', 'DDR5 6000MHz kompatibel penuh', null];
         $rules[] = [$z890_asus, $ddr4_corsair_16, 'incompatible', 'Z890 Arrow Lake hanya support DDR5', 'Platform LGA1851 Arrow Lake hanya mendukung DDR5. Gunakan RAM DDR5'];
@@ -307,7 +307,7 @@ class CompatibilityRuleSeeder extends Seeder
 
         // SECTION 3: GPU ↔ PSU (Power Requirements)
 
-        // GTX 1650 — tidak perlu konektor daya tambahan (75W dari slot PCIe)
+        // GTX 1650 - tidak perlu konektor daya tambahan (75W dari slot PCIe)
         $rules[] = [$gtx1650, $psu450, 'compatible', 'GTX 1650 tidak butuh konektor daya eksternal, 450W lebih dari cukup', null];
         $rules[] = [$gtx1650, $psu550, 'compatible', 'PSU 550W lebih dari cukup untuk GTX 1650', null];
         $rules[] = [$gtx1650, $psu650_seasonic, 'compatible', 'Overkill tapi berjalan sempurna', null];
@@ -357,7 +357,7 @@ class CompatibilityRuleSeeder extends Seeder
         $rules[] = [$rtx4080s, $psu1000_corsair, 'compatible', 'PSU 1000W ideal untuk sistem dengan RTX 4080 Super', null];
         $rules[] = [$rtx4080s, $psu1000_tt, 'compatible', 'PSU 1000W ATX 3.0 sangat direkomendasikan untuk RTX 4080 Super', null];
 
-        // RTX 4090 TDP 450W — monster power
+        // RTX 4090 TDP 450W - monster power
         $rules[] = [$rtx4090, $psu750, 'incompatible', 'PSU 750W tidak cukup untuk RTX 4090', 'RTX 4090 TDP 450W membutuhkan minimal 1000W PSU, terutama dengan CPU high-end'];
         $rules[] = [$rtx4090, $psu850, 'warning', 'PSU 850W terlalu ketat untuk RTX 4090', 'RTX 4090 membutuhkan minimal 1000W. PSU 850W berisiko crash saat gaming berat'];
         $rules[] = [$rtx4090, $psu1000_corsair, 'compatible', 'PSU 1000W cukup untuk RTX 4090 dengan CPU hemat daya', null];
@@ -403,15 +403,15 @@ class CompatibilityRuleSeeder extends Seeder
         $rules[] = [$i3_12100f, $rtx4070s, 'warning', 'Bottleneck serius di 1080p gaming', 'RTX 4070 Super membutuhkan CPU yang lebih kuat. i3-12100F akan menjadi leher botol yang jelas'];
         $rules[] = [$i3_12100f, $rtx4070tis, 'warning', 'Mismatch besar antara CPU dan GPU', 'i3-12100F akan membatasi RTX 4070 Ti Super hingga 30-40% di game CPU-bound. Upgrade CPU terlebih dahulu'];
         $rules[] = [$i3_12100f, $rtx4080s, 'warning', 'Bottleneck ekstrem tidak disarankan', 'Memasang RTX 4080 Super dengan i3-12100F sangat tidak efisien. Upgrade CPU ke setidaknya i5-13600K atau Ryzen 7'];
-        $rules[] = [$i3_12100f, $rtx4090, 'warning', 'Bottleneck parah — mubazir', 'RTX 4090 dengan i3-12100F adalah pemborosan besar. CPU ini akan membatasi GPU hingga 50%+ di banyak game'];
+        $rules[] = [$i3_12100f, $rtx4090, 'warning', 'Bottleneck parah - mubazir', 'RTX 4090 dengan i3-12100F adalah pemborosan besar. CPU ini akan membatasi GPU hingga 50%+ di banyak game'];
         $rules[] = [$i3_12100f, $rtx4060, 'compatible', 'Pasangan yang seimbang untuk budget gaming', null];
         $rules[] = [$i3_12100f, $rx7600, 'compatible', 'Seimbang untuk 1080p budget gaming', null];
 
-        // i3-12100 (dengan iGPU) — tidak butuh GPU tapi bisa
+        // i3-12100 (dengan iGPU) - tidak butuh GPU tapi bisa
         $rules[] = [$i3_12100, $rtx4060, 'compatible', 'RTX 4060 + i3-12100 seimbang untuk 1080p', null];
         $rules[] = [$i3_12100, $rtx4070, 'warning', 'i3-12100 akan sedikit membatasi RTX 4070', 'i3-12100 mungkin bottleneck ringan dengan RTX 4070 di game CPU-intensive. Pertimbangkan upgrade CPU'];
 
-        // i5-12400F / i5-13400F — sweet spot untuk mid-range GPU
+        // i5-12400F / i5-13400F - sweet spot untuk mid-range GPU
         $rules[] = [$i5_12400f, $rtx4060, 'compatible', 'Kombinasi 1080p gaming yang sangat seimbang', null];
         $rules[] = [$i5_12400f, $rtx4070, 'compatible', 'Pasangan yang baik untuk 1440p gaming', null];
         $rules[] = [$i5_12400f, $rtx4070s, 'compatible', 'i5-12400F masih memadai untuk RTX 4070 Super di 1440p', null];
@@ -424,19 +424,19 @@ class CompatibilityRuleSeeder extends Seeder
         $rules[] = [$i5_13400f, $rtx4070tis, 'warning', 'Sedikit bottleneck di 1080p game CPU-heavy', 'i5-13400F bisa bottleneck ringan RTX 4070 Ti Super di 1080p game seperti CS2. Di 1440p+ lebih seimbang'];
         $rules[] = [$i5_13400f, $rtx4090, 'warning', 'Bottleneck terdeteksi di 1080p', 'i5-13400F tidak ideal dengan RTX 4090. Upgrade ke i7 atau i9 untuk memanfaatkan GPU ini secara penuh'];
 
-        // i5-13600K — sangat baik untuk gaming
+        // i5-13600K - sangat baik untuk gaming
         $rules[] = [$i5_13600k, $rtx4070, 'compatible', 'Pasangan gaming 1440p yang sangat baik', null];
         $rules[] = [$i5_13600k, $rtx4070s, 'compatible', 'Kombinasi kencang untuk 1440p gaming', null];
         $rules[] = [$i5_13600k, $rtx4070tis, 'compatible', 'Seimbang baik untuk 1440p dan 4K gaming', null];
         $rules[] = [$i5_13600k, $rtx4080s, 'compatible', 'i5-13600K masih memadai untuk RTX 4080 Super di 1440p+', null];
         $rules[] = [$i5_13600k, $rtx4090, 'warning', 'i5-13600K sedikit membatasi RTX 4090 di 1080p', 'RTX 4090 dengan i5-13600K akan bottleneck di 1080p game CPU-heavy. Gunakan 1440p/4K untuk hasil terbaik'];
 
-        // i7-13700K — hampir tidak ada bottleneck dengan GPU apapun
+        // i7-13700K - hampir tidak ada bottleneck dengan GPU apapun
         $rules[] = [$i7_13700k, $rtx4070tis, 'compatible', 'Kombinasi flagship gaming yang sangat seimbang', null];
         $rules[] = [$i7_13700k, $rtx4080s, 'compatible', 'Pasangan 4K gaming yang sempurna', null];
         $rules[] = [$i7_13700k, $rtx4090, 'compatible', 'Hampir tidak ada bottleneck, pasangan 4K terbaik', null];
 
-        // i9-13900K — flagship, tidak bottleneck GPU apapun
+        // i9-13900K - flagship, tidak bottleneck GPU apapun
         $rules[] = [$i9_13900k, $rtx4090, 'compatible', 'Kombinasi performa puncak tanpa bottleneck', null];
         $rules[] = [$i9_13900k, $rtx4080s, 'compatible', 'Pasangan workstation dan gaming kelas atas', null];
 
@@ -447,14 +447,14 @@ class CompatibilityRuleSeeder extends Seeder
         $rules[] = [$r5600x, $rtx4070tis, 'warning', 'Mismatch antara Ryzen 5600X dan RTX 4070 Ti Super', 'Ryzen 5600X 6-core akan signifikan bottleneck RTX 4070 Ti Super. Upgrade ke Ryzen 7 atau lebih tinggi'];
         $rules[] = [$r5600x, $rtx4090, 'warning', 'Bottleneck parah, sangat tidak efisien', 'RTX 4090 dengan Ryzen 5600X sangat tidak seimbang. Upgrade CPU ke minimal Ryzen 7 5800X3D'];
 
-        // AMD Ryzen 5800X3D — raja gaming, tidak bottleneck
+        // AMD Ryzen 5800X3D - raja gaming, tidak bottleneck
         $rules[] = [$r5800x3d, $rtx4070, 'compatible', 'Kombinasi gaming 1440p terbaik di kelas AM4', null];
         $rules[] = [$r5800x3d, $rtx4070s, 'compatible', 'Pasangan gaming premium AM4', null];
         $rules[] = [$r5800x3d, $rtx4070tis, 'compatible', 'Seimbang baik untuk 1440p gaming', null];
         $rules[] = [$r5800x3d, $rtx4080s, 'compatible', 'Hampir tidak ada bottleneck berkat 3D V-Cache', null];
         $rules[] = [$r5800x3d, $rtx4090, 'warning', 'Sedikit bottleneck di 1080p game CPU-heavy', 'Meski raja gaming AM4, Ryzen 5800X3D bisa sedikit bottleneck RTX 4090 di 1080p. 1440p/4K optimal'];
 
-        // AMD Ryzen 7800X3D — raja gaming AM5
+        // AMD Ryzen 7800X3D - raja gaming AM5
         $rules[] = [$r7800x3d, $rtx4070tis, 'compatible', 'Kombinasi gaming terbaik yang ada saat ini', null];
         $rules[] = [$r7800x3d, $rtx4080s, 'compatible', 'Hampir tidak ada bottleneck sama sekali', null];
         $rules[] = [$r7800x3d, $rtx4090, 'compatible', 'Pasangan 4K gaming paling seimbang', null];
@@ -466,7 +466,7 @@ class CompatibilityRuleSeeder extends Seeder
         $rules[] = [$r7600x, $rtx4070tis, 'warning', 'Ryzen 7600X mulai bottleneck RTX 4070 Ti Super di 1080p', 'Di game CPU-heavy 1080p, 7600X bisa membatasi 4070 Ti Super. 1440p lebih optimal'];
         $rules[] = [$r7600x, $rtx4090, 'warning', 'Bottleneck signifikan di 1080p', 'Ryzen 7600X tidak ideal untuk RTX 4090. Pertimbangkan Ryzen 7800X3D untuk pasangan terbaik'];
 
-        // CPU tanpa iGPU dan tidak ada GPU diskrit — tidak bisa boot ke display
+        // CPU tanpa iGPU dan tidak ada GPU diskrit - tidak bisa boot ke display
         $rules[] = [$r5600x, $b550_asus, 'compatible', null, null]; // sudah ada di atas, skip duplikat
         // Catatan khusus: CPU tanpa iGPU (F-series Intel, non-G AMD) WAJIB pakai GPU diskrit
 
@@ -518,7 +518,7 @@ class CompatibilityRuleSeeder extends Seeder
         $rules[] = [$nvme_gen5_mp700, $z890_asus, 'compatible', 'Z890 mendukung NVMe PCIe 5.0 secara native', null];
         $rules[] = [$nvme_gen5_mp700, $z890_msi, 'compatible', 'Z890 Tomahawk punya slot M.2 PCIe 5.0', null];
 
-        // NVMe Gen 4 di board AM4 (PCIe 3.0 M.2) — downgrade tapi tetap jalan
+        // NVMe Gen 4 di board AM4 (PCIe 3.0 M.2) - downgrade tapi tetap jalan
         $rules[] = [$nvme_gen4_samsung_990, $b450_msi, 'warning', 'Samsung 990 Pro Gen 4 di B450 akan berjalan di Gen 3', 'B450 hanya support M.2 PCIe 3.0. Samsung 990 Pro PCIe 4.0 akan fallback ke Gen 3, kehilangan sekitar separuh kecepatan baca/tulis'];
 
         // SECTION 9: Ryzen 5000 di B450 butuh BIOS update

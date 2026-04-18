@@ -13,7 +13,7 @@
                            focus:outline-none focus:border-terracotta transition text-charcoal"/>
             </div>
             @error('budget') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
-            <p class="text-xs text-charcoal/40 mt-1">Min: Rp 1.500.000 — Max: Rp 100.000.000</p>
+            <p class="text-xs text-charcoal/40 mt-1">Min: Rp 1.500.000 - Max: Rp 100.000.000</p>
         </div>
 
         {{-- Mode Selector --}}
@@ -116,7 +116,7 @@
     @if($hasResult)
         <div class="mt-10 space-y-6">
 
-            {{-- Build GAGAL — komponen tidak lengkap --}}
+            {{-- Build GAGAL - komponen tidak lengkap --}}
             @if(!($result['success'] ?? true))
                 <div class="p-6 rounded-2xl border border-red-200 bg-red-50 text-center space-y-3">
                     <p class="text-2xl"></p>

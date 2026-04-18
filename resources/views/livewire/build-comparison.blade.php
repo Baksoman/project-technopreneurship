@@ -249,7 +249,7 @@
                     <p class="text-xs text-charcoal/40 mt-0.5">Rp {{ number_format($compA->base_price, 0, ',', '.') }}</p>
                     <p class="text-xs text-charcoal/30">Score: {{ $compA->performance_score ?? '-' }}</p>
                     @else
-                    <p class="text-xs text-charcoal/30">—</p>
+                    <p class="text-xs text-charcoal/30">-</p>
                     @endif
                 </div>
 
@@ -259,7 +259,7 @@
                     <p class="text-xs text-charcoal/40 mt-0.5">Rp {{ number_format($compB->base_price, 0, ',', '.') }}</p>
                     <p class="text-xs text-charcoal/30">Score: {{ $compB->performance_score ?? '-' }}</p>
                     @else
-                    <p class="text-xs text-charcoal/30">—</p>
+                    <p class="text-xs text-charcoal/30">-</p>
                     @endif
                 </div>
             </div>
@@ -281,7 +281,7 @@
         @foreach([['label' => 'Build A', 'build' => $buildA], ['label' => 'Build B', 'build' => $buildB]] as $item)
         @if(!empty($item['build']['bottleneck_warnings']))
         <div class="space-y-2">
-            <p class="text-xs font-semibold text-charcoal/50 uppercase">Warning — {{ $item['label'] }}</p>
+            <p class="text-xs font-semibold text-charcoal/50 uppercase">Warning - {{ $item['label'] }}</p>
             @foreach($item['build']['bottleneck_warnings'] as $w)
             <div class="p-3 rounded-xl border border-amber-200 bg-amber-50">
                 <p class="text-xs font-medium text-amber-700">{{ $w['message'] }}</p>

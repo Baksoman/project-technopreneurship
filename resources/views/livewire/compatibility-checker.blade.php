@@ -53,7 +53,7 @@
                 <option value="">-- Pilih {{ $category->name }} --</option>
                 @foreach($category->components as $component)
                 <option value="{{ $component->id }}">
-                    {{ $component->name }} — Rp {{ number_format($component->base_price, 0, ',', '.') }}
+                    {{ $component->name }} - Rp {{ number_format($component->base_price, 0, ',', '.') }}
                 </option>
                 @endforeach
             </select>

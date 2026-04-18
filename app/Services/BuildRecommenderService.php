@@ -58,7 +58,7 @@ class BuildRecommenderService
             $includePsu ? [] : ['psu']
         ));
 
-        // STEP 1 — Pilih support components (tidak boleh melebihi budget)
+        // STEP 1 - Pilih support components (tidak boleh melebihi budget)
         [$supportComponents, $supportCost, $supportFailed] = $this->pickSupportComponents(
             categories: $supportCategories,
             totalBudget: $budget,
@@ -69,14 +69,14 @@ class BuildRecommenderService
             return $this->buildFailResponse($budget, $useCase, $mode, $supportFailed, $supportComponents, 'support');
         }
 
-        // STEP 2 — Sisa budget untuk anchor, pastikan tidak negatif
+        // STEP 2 - Sisa budget untuk anchor, pastikan tidak negatif
         $anchorBudget = $budget - $supportCost;
 
         if ($anchorBudget <= 0) {
             return $this->buildFailResponse($budget, $useCase, $mode, $anchorCategories, $supportComponents, 'no_anchor_budget');
         }
 
-        // STEP 3 — Generate beberapa kandidat build anchor
+        // STEP 3 - Generate beberapa kandidat build anchor
         $candidateBuilds = $this->generateCandidateBuilds(
             anchorCategories: $anchorCategories,
             anchorBudget: $anchorBudget,
@@ -89,7 +89,7 @@ class BuildRecommenderService
             return $this->buildFailResponse($budget, $useCase, $mode, $anchorCategories, $supportComponents, 'anchor');
         }
 
-        // STEP 4 — Gabungkan setiap kandidat dengan support components
+        // STEP 4 - Gabungkan setiap kandidat dengan support components
         //          Lalu pilih build terbaik berdasarkan mode
         $bestBuild = $this->selectBestBuild(
             candidateBuilds: $candidateBuilds,
@@ -142,7 +142,7 @@ class BuildRecommenderService
                 if ($cheaper && ($totalCost + $cheaper->base_price) <= $supportBudgetCap) {
                     $candidate = $cheaper;
                 }
-                // Kalau tetap melebihi cap, tetap pakai — lebih baik build ada
+                // Kalau tetap melebihi cap, tetap pakai - lebih baik build ada
             }
 
             // Hard limit: satu komponen tidak boleh melebihi total budget
@@ -206,7 +206,7 @@ class BuildRecommenderService
         foreach ($normalized as $slug => $percentage) {
             $slugBudget = ($percentage / 100) * $anchorBudget;
 
-            // Ambil beberapa kandidat terbaik dalam budget (strict — tidak boleh over)
+            // Ambil beberapa kandidat terbaik dalam budget (strict - tidak boleh over)
             $candidatesPerSlug[$slug] = $this->getAnchorCandidatesStrict(
                 slug: $slug,
                 budget: $slugBudget,
@@ -237,7 +237,7 @@ class BuildRecommenderService
     ): Collection {
         $query = Component::whereHas('category', fn($q) => $q->where('slug', $slug))
             ->where('is_active', true)
-            ->where('base_price', '<=', $budget); // strict — tidak ada toleransi over budget
+            ->where('base_price', '<=', $budget); // strict - tidak ada toleransi over budget
 
         if ($brandPreference !== 'any' && in_array($slug, ['cpu', 'gpu'])) {
             $brandQuery = clone $query;
@@ -346,7 +346,7 @@ class BuildRecommenderService
             // Resolve kompatibilitas
             $allComponents = $this->resolveCompatibility($allComponents);
 
-            // Cek total harga — tidak boleh melebihi budget
+            // Cek total harga - tidak boleh melebihi budget
             $totalPrice = collect($allComponents)->sum('base_price');
             if ($totalPrice > $budget)
                 continue;
@@ -504,7 +504,7 @@ class BuildRecommenderService
 
         $detail = match ($reason) {
             'support' => "Komponen pendukung ({$missingLabel}) tidak ditemukan dalam budget.",
-            'no_anchor_budget' => "Budget habis untuk komponen pendukung — tidak cukup untuk CPU, GPU, dan Motherboard.",
+            'no_anchor_budget' => "Budget habis untuk komponen pendukung - tidak cukup untuk CPU, GPU, dan Motherboard.",
             'anchor' => "Komponen utama ({$missingLabel}) tidak ditemukan dalam sisa budget.",
             default => "Beberapa komponen tidak ditemukan: {$missingLabel}.",
         };
@@ -556,13 +556,13 @@ class BuildRecommenderService
         $usedPercent = round(($totalPrice / $budget) * 100);
 
         if ($mode === 'max_budget') {
-            return "Build performa maksimal — menggunakan {$usedPercent}% budget dengan score {$score}/100.";
+            return "Build performa maksimal - menggunakan {$usedPercent}% budget dengan score {$score}/100.";
         }
 
         if ($score >= 80)
-            return "Build sangat worth it — performa tinggi dengan budget efisien ({$usedPercent}% terpakai).";
+            return "Build sangat worth it - performa tinggi dengan budget efisien ({$usedPercent}% terpakai).";
         if ($score >= 60)
-            return "Build solid — performa baik untuk harganya ({$usedPercent}% budget terpakai).";
-        return "Build ditemukan — pertimbangkan naikkan budget untuk performa lebih baik ({$usedPercent}% terpakai).";
+            return "Build solid - performa baik untuk harganya ({$usedPercent}% budget terpakai).";
+        return "Build ditemukan - pertimbangkan naikkan budget untuk performa lebih baik ({$usedPercent}% terpakai).";
     }
 }
