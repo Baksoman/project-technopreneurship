@@ -1,6 +1,46 @@
 <div class="space-y-6">
 
+    {{-- Mode Selector --}}
+    <div class="flex gap-3 p-1 bg-charcoal/5 rounded-xl">
+        <button wire:click="$set('inputMode', 'manual')" class="flex-1 py-2 rounded-lg text-sm font-medium transition
+                   {{ $inputMode === 'manual' ? 'bg-white text-charcoal shadow' : 'text-charcoal/50' }}">
+            Input Manual
+        </button>
+        <button wire:click="$set('inputMode', 'saved')" class="flex-1 py-2 rounded-lg text-sm font-medium transition
+                   {{ $inputMode === 'saved' ? 'bg-white text-charcoal shadow' : 'text-charcoal/50' }}">
+            Pilih Build Tersimpan
+        </button>
+    </div>
+
+    {{-- Saved Build Selector --}}
+    @if($inputMode === 'saved')
+        <div>
+            @if(session('user_id'))
+                @if($savedBuilds->isNotEmpty())
+                    <label class="block text-xs font-medium text-charcoal/50 uppercase tracking-wider mb-2">
+                        Pilih Build
+                    </label>
+                    <select wire:model="selectedBuildId" wire:change="loadSavedBuild"
+                        class="w-full px-4 py-3 rounded-xl border border-charcoal/10 bg-white text-charcoal text-sm
+                               focus:outline-none focus:border-terracotta transition">
+                        <option value="">-- Pilih Build --</option>
+                        @foreach($savedBuilds as $build)
+                            <option value="{{ $build->id }}">
+                                {{ $build->name }} ({{ ucfirst($build->use_case) }}) - Rp {{ number_format($build->total_price, 0, ',', '.') }}
+                            </option>
+                        @endforeach
+                    </select>
+                @else
+                    <p class="text-sm text-charcoal/50 text-center py-8">Belum ada build tersimpan. <a href="{{ route('welcome') }}" class="text-terracotta hover:underline">Buat build dulu</a></p>
+                @endif
+            @else
+                <p class="text-sm text-charcoal/50 text-center py-8">Login dulu untuk akses build tersimpan. <a href="{{ route('login') }}" class="text-terracotta hover:underline">Login</a></p>
+            @endif
+        </div>
+    @endif
+
     {{-- Select Komponen --}}
+    @if($inputMode === 'manual')
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         @foreach($categories as $category)
         <div>
@@ -20,6 +60,7 @@
         </div>
         @endforeach
     </div>
+    @endif
 
     {{-- Error --}}
     @if(session('error'))
@@ -46,12 +87,6 @@
 
             {{-- Status Badge --}}
             <div class="flex items-center gap-2 mb-2">
-                <span class="text-lg">
-                    @if($result['status'] === 'compatible')   ✅
-                    @elseif($result['status'] === 'warning')  ⚠️
-                    @else                                      ❌
-                    @endif
-                </span>
                 <span class="text-xs font-semibold uppercase tracking-wide
                     @if($result['status'] === 'compatible')   text-green-700
                     @elseif($result['status'] === 'warning')  text-amber-700
@@ -81,7 +116,7 @@
             @if($result['suggestion'])
             <p class="text-xs mt-2 font-medium
                 @if($result['status'] === 'warning') text-amber-700 @else text-red-700 @endif">
-                💡 {{ $result['suggestion'] }}
+                {{ $result['suggestion'] }}
             </p>
             @endif
         </div>
