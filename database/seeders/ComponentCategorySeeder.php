@@ -18,7 +18,7 @@ class ComponentCategorySeeder extends Seeder
             ['name' => 'Storage', 'icon' => 'storage'],
             ['name' => 'PSU', 'icon' => 'psu'],
             ['name' => 'Case', 'icon' => 'case'],
-            ['name' => 'Cooler', 'icon' => 'cooler'],
+            ['name' => 'CPU Cooler', 'icon' => 'cooler'],
         ];
 
         foreach ($categories as $category) {

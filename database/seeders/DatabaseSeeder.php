@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
         // ]);
         
         $this->call([
+            RolePermissionSeeder::class,
             ComponentCategorySeeder::class,
             ComponentSeeder::class,
             ComponentPriceSeeder::class,
