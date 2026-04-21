@@ -23,7 +23,7 @@ class BuildRecommenderService
 
     const SUPPORT_MIN_SCORE = [
         'ram' => 60,
-        'storage' => 55,
+        'storage' => 65,  // Naikkan dari 55 → 65 (hindari HDD lemot)
         'psu' => 50,
         'cpu-cooler' => 60,
         'case' => 70,
@@ -58,7 +58,7 @@ class BuildRecommenderService
             $includePsu ? [] : ['psu']
         ));
 
-        // STEP 1 - Pilih support components (tidak boleh melebihi budget)
+        // STEP 1 — Pilih support components (tidak boleh melebihi budget)
         [$supportComponents, $supportCost, $supportFailed] = $this->pickSupportComponents(
             categories: $supportCategories,
             totalBudget: $budget,
@@ -69,14 +69,14 @@ class BuildRecommenderService
             return $this->buildFailResponse($budget, $useCase, $mode, $supportFailed, $supportComponents, 'support');
         }
 
-        // STEP 2 - Sisa budget untuk anchor, pastikan tidak negatif
+        // STEP 2 — Sisa budget untuk anchor, pastikan tidak negatif
         $anchorBudget = $budget - $supportCost;
 
         if ($anchorBudget <= 0) {
             return $this->buildFailResponse($budget, $useCase, $mode, $anchorCategories, $supportComponents, 'no_anchor_budget');
         }
 
-        // STEP 3 - Generate beberapa kandidat build anchor
+        // STEP 3 — Generate beberapa kandidat build anchor
         $candidateBuilds = $this->generateCandidateBuilds(
             anchorCategories: $anchorCategories,
             anchorBudget: $anchorBudget,
@@ -89,7 +89,7 @@ class BuildRecommenderService
             return $this->buildFailResponse($budget, $useCase, $mode, $anchorCategories, $supportComponents, 'anchor');
         }
 
-        // STEP 4 - Gabungkan setiap kandidat dengan support components
+        // STEP 4 — Gabungkan setiap kandidat dengan support components
         //          Lalu pilih build terbaik berdasarkan mode
         $bestBuild = $this->selectBestBuild(
             candidateBuilds: $candidateBuilds,
@@ -119,15 +119,37 @@ class BuildRecommenderService
         $totalCost = 0;
         $failed = [];
 
-        // Support boleh pakai maksimal 30% budget
-        $supportBudgetCap = $totalBudget * 0.30;
+        // Dynamic cap berdasarkan budget tier
+        if ($totalBudget >= 20_000_000) {
+            $capPct = $mode === 'max_budget' ? 0.20 : 0.25;
+        } else if ($totalBudget >= 15_000_000) {
+            $capPct = $mode === 'max_budget' ? 0.22 : 0.26;
+        } else {
+            $capPct = $mode === 'max_budget' ? 0.25 : 0.28;
+        }
+        
+        $supportBudgetCap = $totalBudget * $capPct;
 
         foreach ($categories as $slug) {
-            $minScore = self::SUPPORT_MIN_SCORE[$slug] ?? 50;
+            $baseMinScore = self::SUPPORT_MIN_SCORE[$slug] ?? 50;
+            
+            // Dynamic min score: turun di budget rendah
+            if ($totalBudget < 15_000_000) {
+                $minScore = max($baseMinScore - 10, 45);
+            } else if ($totalBudget < 18_000_000) {
+                $minScore = max($baseMinScore - 5, 50);
+            } else {
+                $minScore = $baseMinScore;
+            }
+            
             $candidate = $this->pickSupportCandidate($slug, $minScore, $mode);
 
             if (!$candidate) {
-                // Coba tanpa minimum score
+                // Fallback: turunkan threshold 10 poin
+                $candidate = $this->pickSupportCandidate($slug, max($minScore - 10, 40), $mode);
+            }
+
+            if (!$candidate) {
                 $candidate = $this->pickCheapestSupport($slug);
             }
 
@@ -136,16 +158,23 @@ class BuildRecommenderService
                 continue;
             }
 
-            // Jika melebihi cap, cari yang lebih murah
             if (($totalCost + $candidate->base_price) > $supportBudgetCap) {
                 $cheaper = $this->pickCheapestSupport($slug);
                 if ($cheaper && ($totalCost + $cheaper->base_price) <= $supportBudgetCap) {
-                    $candidate = $cheaper;
+                    // Cek apakah cheaper masih memenuhi min score
+                    if ($cheaper->performance_score >= ($minScore - 10)) {
+                        $candidate = $cheaper;
+                    } else if ($mode === 'max_budget') {
+                        // Max budget: tetap pakai yang memenuhi min score meski over cap sedikit
+                        if (($totalCost + $candidate->base_price) <= $supportBudgetCap * 1.15) {
+                            // Keep candidate
+                        } else {
+                            $candidate = $cheaper;
+                        }
+                    }
                 }
-                // Kalau tetap melebihi cap, tetap pakai - lebih baik build ada
             }
 
-            // Hard limit: satu komponen tidak boleh melebihi total budget
             if ($candidate->base_price > $totalBudget) {
                 $failed[] = $slug;
                 continue;
@@ -167,8 +196,11 @@ class BuildRecommenderService
             ->where('is_active', true)
             ->where('performance_score', '>=', $minScore);
 
-        // Untuk support components, selalu pilih yang paling worth it
-        // Biar budget bisa dimaksimalkan di anchor components (CPU, GPU, Motherboard)
+        if ($mode === 'max_budget') {
+            return $query->orderByDesc('performance_score')->first();
+        }
+
+        // Balanced: paling worth it (score / harga)
         return $query->get()
             ->sortByDesc(fn($c) => $c->performance_score / max($c->base_price, 1))
             ->first();
@@ -196,17 +228,57 @@ class BuildRecommenderService
     ): array {
         $allocation = self::ANCHOR_ALLOCATION[$useCase] ?? self::ANCHOR_ALLOCATION['gaming'];
 
-        // Filter & normalisasi alokasi sesuai kategori aktif
+        // DYNAMIC ALLOCATION: Adjust berdasarkan budget tier
+        if ($anchorBudget < 15_000_000 && $useCase === 'gaming') {
+            $allocation = ['gpu' => 50, 'cpu' => 30, 'motherboard' => 20];
+        }
+
         $activeAlloc = array_filter($allocation, fn($slug) => in_array($slug, $anchorCategories), ARRAY_FILTER_USE_KEY);
         $totalPct = array_sum($activeAlloc);
         $normalized = array_map(fn($pct) => ($pct / $totalPct) * 100, $activeAlloc);
 
-        // Ambil top-N kandidat per kategori
+        // STRATEGY: Generate kandidat dengan berbagai variasi alokasi budget
+        $allBuilds = [];
+        
+        // Variasi 1: Alokasi standar
+        $allBuilds = array_merge($allBuilds, $this->generateWithAllocation($anchorCategories, $anchorBudget, $normalized, $brandPreference, $mode));
+        
+        // Variasi 2: Untuk gaming, coba alokasi GPU lebih besar (jika belum)
+        if ($useCase === 'gaming' && in_array('gpu', $anchorCategories) && $anchorBudget >= 15_000_000) {
+            $gpuFocused = ['gpu' => 50, 'cpu' => 30, 'motherboard' => 20];
+            $activeGpu = array_filter($gpuFocused, fn($slug) => in_array($slug, $anchorCategories), ARRAY_FILTER_USE_KEY);
+            $totalGpu = array_sum($activeGpu);
+            $normalizedGpu = array_map(fn($pct) => ($pct / $totalGpu) * 100, $activeGpu);
+            $allBuilds = array_merge($allBuilds, $this->generateWithAllocation($anchorCategories, $anchorBudget, $normalizedGpu, $brandPreference, $mode));
+        }
+        
+        // Variasi 3: Balanced allocation (33-33-33)
+        if (count($anchorCategories) === 3) {
+            $balanced = array_fill_keys($anchorCategories, 33.33);
+            $allBuilds = array_merge($allBuilds, $this->generateWithAllocation($anchorCategories, $anchorBudget, $balanced, $brandPreference, $mode));
+        }
+
+        // Deduplicate berdasarkan kombinasi component IDs
+        $unique = [];
+        foreach ($allBuilds as $build) {
+            $key = implode('-', array_map(fn($c) => $c->id, $build));
+            $unique[$key] = $build;
+        }
+
+        return array_values($unique);
+    }
+
+    protected function generateWithAllocation(
+        array $anchorCategories,
+        float $anchorBudget,
+        array $normalized,
+        string $brandPreference,
+        string $mode,
+    ): array {
         $candidatesPerSlug = [];
         foreach ($normalized as $slug => $percentage) {
             $slugBudget = ($percentage / 100) * $anchorBudget;
 
-            // Ambil beberapa kandidat terbaik dalam budget (strict - tidak boleh over)
             $candidatesPerSlug[$slug] = $this->getAnchorCandidatesStrict(
                 slug: $slug,
                 budget: $slugBudget,
@@ -216,12 +288,10 @@ class BuildRecommenderService
             );
 
             if ($candidatesPerSlug[$slug]->isEmpty()) {
-                // Tidak ada kandidat sama sekali → gagal
                 return [];
             }
         }
 
-        // Buat kombinasi build dari kandidat-kandidat tersebut
         return $this->combineCandidates($candidatesPerSlug, $anchorBudget, $normalized);
     }
 
@@ -237,28 +307,30 @@ class BuildRecommenderService
     ): Collection {
         $query = Component::whereHas('category', fn($q) => $q->where('slug', $slug))
             ->where('is_active', true)
-            ->where('base_price', '<=', $budget); // strict - tidak ada toleransi over budget
+            ->where('base_price', '<=', $budget);
 
         if ($brandPreference !== 'any' && in_array($slug, ['cpu', 'gpu'])) {
             $brandQuery = clone $query;
             $brandQuery->where('brand', $brandPreference);
 
-            // Fallback ke semua brand jika preferensi brand tidak ada kandidat
             if ($brandQuery->count() > 0) {
                 $query = $brandQuery;
             }
         }
 
         if ($mode === 'max_budget') {
-            // Max budget: ambil yang harganya paling tinggi (dalam budget) dengan score bagus
-            // Prioritas: habiskan budget sebanyak mungkin
-            return $query->orderByDesc('base_price')
-                ->orderByDesc('performance_score')
-                ->limit($limit)
-                ->get();
+            // Max budget: ambil yang score tinggi tapi tetap pertimbangkan balance
+            // Ambil top candidates lalu diversifikasi untuk hindari bottleneck
+            $all = $query->orderByDesc('performance_score')->limit($limit * 3)->get();
+            
+            // Ambil mix: top performers + mid-range untuk variasi
+            $top = $all->take((int)ceil($limit * 0.6)); // 60% top
+            $mid = $all->slice((int)ceil($limit * 0.6))->take((int)ceil($limit * 0.4)); // 40% mid
+            
+            return $top->merge($mid)->take($limit)->values();
         }
 
-        // Balanced: ambil berdasarkan campuran score & price efficiency
+        // Balanced: campuran score & price efficiency
         return $query->orderByDesc('performance_score')->limit($limit * 2)->get()
             ->sortByDesc(fn($c) => $c->performance_score / max($c->base_price / 1_000_000, 0.1))
             ->take($limit)
@@ -278,42 +350,122 @@ class BuildRecommenderService
         $slugs = array_keys($candidatesPerSlug);
         $maxLen = max(array_map(fn($c) => $c->count(), $candidatesPerSlug));
 
-        for ($i = 0; $i < min($maxLen, self::CANDIDATE_BUILDS); $i++) {
-            $build = [];
-            $buildCost = 0;
-            $valid = true;
-
-            foreach ($slugs as $slug) {
-                $candidates = $candidatesPerSlug[$slug];
-
-                // Pilih kandidat ke-i, atau kandidat terakhir jika tidak ada
-                $component = $candidates->get($i) ?? $candidates->last();
-
-                if (!$component) {
-                    $valid = false;
-                    break;
-                }
-
-                // Pastikan total anchor build tidak melebihi anchor budget
-                if (($buildCost + $component->base_price) > $anchorBudget) {
-                    // Coba pakai yang lebih murah (kandidat pertama = paling worth it)
-                    $component = $candidates->first();
-                    if (!$component || ($buildCost + $component->base_price) > $anchorBudget) {
-                        $valid = false;
-                        break;
-                    }
-                }
-
-                $build[$slug] = $component;
-                $buildCost += $component->base_price;
+        // FLEXIBLE COMBINATION: Coba berbagai kombinasi, tidak hanya round-robin
+        // Ini penting untuk budget pas-pasan agar bisa realokasi budget antar komponen
+        
+        for ($i = 0; $i < min($maxLen, self::CANDIDATE_BUILDS * 2); $i++) {
+            // Strategy 1: Round-robin standar
+            $build = $this->tryBuildCombination($candidatesPerSlug, $slugs, $i, $anchorBudget);
+            if ($build) $builds[] = $build;
+            
+            // Strategy 2: Prioritas GPU (untuk gaming)
+            if (isset($candidatesPerSlug['gpu'])) {
+                $build = $this->tryBuildWithPriority($candidatesPerSlug, $slugs, 'gpu', $i, $anchorBudget);
+                if ($build) $builds[] = $build;
             }
-
-            if ($valid && !empty($build)) {
-                $builds[] = $build;
+            
+            // Strategy 3: Prioritas CPU (untuk editing/work)
+            if (isset($candidatesPerSlug['cpu'])) {
+                $build = $this->tryBuildWithPriority($candidatesPerSlug, $slugs, 'cpu', $i, $anchorBudget);
+                if ($build) $builds[] = $build;
             }
         }
 
-        return $builds;
+        // Deduplicate & filter bottleneck ekstrem
+        $unique = [];
+        foreach ($builds as $build) {
+            if ($this->hasExtremeBottleneck($build)) continue;
+            
+            $key = implode('-', array_map(fn($c) => $c->id, $build));
+            $unique[$key] = $build;
+        }
+
+        return array_values($unique);
+    }
+
+    protected function tryBuildCombination(array $candidatesPerSlug, array $slugs, int $index, float $budget): ?array
+    {
+        $build = [];
+        $cost = 0;
+
+        foreach ($slugs as $slug) {
+            $candidates = $candidatesPerSlug[$slug];
+            $component = $candidates->get($index) ?? $candidates->last();
+
+            if (!$component) return null;
+
+            if (($cost + $component->base_price) > $budget) {
+                // Coba yang lebih murah
+                $component = $candidates->first();
+                if (!$component || ($cost + $component->base_price) > $budget) {
+                    return null;
+                }
+            }
+
+            $build[$slug] = $component;
+            $cost += $component->base_price;
+        }
+
+        return empty($build) ? null : $build;
+    }
+
+    protected function tryBuildWithPriority(array $candidatesPerSlug, array $slugs, string $prioritySlug, int $index, float $budget): ?array
+    {
+        $build = [];
+        $cost = 0;
+
+        // Pilih komponen prioritas dulu (ambil yang lebih bagus)
+        if (!isset($candidatesPerSlug[$prioritySlug])) return null;
+        
+        $priorityCandidates = $candidatesPerSlug[$prioritySlug];
+        $priorityComponent = $priorityCandidates->get($index) ?? $priorityCandidates->last();
+        
+        if (!$priorityComponent || $priorityComponent->base_price > $budget * 0.6) return null;
+        
+        $build[$prioritySlug] = $priorityComponent;
+        $cost += $priorityComponent->base_price;
+        $remaining = $budget - $cost;
+
+        // Isi komponen lainnya dengan sisa budget
+        foreach ($slugs as $slug) {
+            if ($slug === $prioritySlug) continue;
+            
+            $candidates = $candidatesPerSlug[$slug];
+            
+            // Cari komponen terbaik yang fit di sisa budget
+            $component = null;
+            foreach ($candidates as $candidate) {
+                if ($candidate->base_price <= $remaining) {
+                    $component = $candidate;
+                    break;
+                }
+            }
+            
+            if (!$component) {
+                $component = $candidates->sortBy('base_price')->first();
+            }
+            
+            if (!$component || ($cost + $component->base_price) > $budget) {
+                return null;
+            }
+
+            $build[$slug] = $component;
+            $cost += $component->base_price;
+            $remaining = $budget - $cost;
+        }
+
+        return count($build) === count($slugs) ? $build : null;
+    }
+
+    protected function hasExtremeBottleneck(array $build): bool
+    {
+        $cpu = $build['cpu'] ?? null;
+        $gpu = $build['gpu'] ?? null;
+        
+        if (!$cpu || !$gpu) return false;
+        
+        $gap = abs(($cpu->performance_score ?? 0) - ($gpu->performance_score ?? 0));
+        return $gap > 40; // Tolak kombinasi dengan gap ekstrem
     }
 
     // =========================================================================
@@ -331,7 +483,6 @@ class BuildRecommenderService
         $evaluated = [];
 
         foreach ($candidateBuilds as $anchorBuild) {
-            // Load relasi
             $loadedAnchor = [];
             foreach ($anchorBuild as $slug => $component) {
                 $loadedAnchor[$slug] = $component->load([
@@ -340,79 +491,80 @@ class BuildRecommenderService
                 ]);
             }
 
-            // Gabungkan dengan support
             $allComponents = array_merge($loadedAnchor, $supportComponents);
-
-            // Resolve kompatibilitas
             $allComponents = $this->resolveCompatibility($allComponents);
 
-            // Cek total harga - tidak boleh melebihi budget
             $totalPrice = collect($allComponents)->sum('base_price');
             if ($totalPrice > $budget)
                 continue;
 
-            // Analisa bottleneck
             $bottleneckWarnings = $this->bottleneckAnalyzer->analyze($allComponents);
-            $penalty = $this->bottleneckAnalyzer->calculatePenalty($bottleneckWarnings);
-
-            $performanceScore = max(0, $this->calculateOverallScore($allComponents, $useCase) - $penalty);
+            $rawScore = $this->calculateOverallScore($allComponents, $useCase);
             $bottleneckCount = count($bottleneckWarnings);
+            
+            $penaltyPct = min($bottleneckCount * 8, 40);
+            $performanceScore = max(0, $rawScore * (1 - $penaltyPct / 100));
 
             $evaluated[] = [
                 'components' => $allComponents,
                 'total_price' => $totalPrice,
                 'performance_score' => $performanceScore,
+                'raw_score' => $rawScore,
                 'bottleneck_warnings' => $bottleneckWarnings,
                 'bottleneck_count' => $bottleneckCount,
-                'penalty' => $penalty,
             ];
         }
 
         if (empty($evaluated))
             return null;
 
-        // Prioritas pemilihan:
-        // 1. Build tanpa bottleneck/warning diutamakan
-        // 2. Dalam grup yang sama, pilih berdasarkan mode:
-        //    - balanced    → score tertinggi (sudah dikurangi penalty)
-        //    - max_budget  → score tertinggi (sudah dikurangi penalty)
-        //    Bedanya: max_budget juga mempertimbangkan total_price (habiskan budget)
-
-        // Pisahkan build tanpa warning dan yang ada warning
         $cleanBuilds = array_filter($evaluated, fn($b) => $b['bottleneck_count'] === 0);
         $warningBuilds = array_filter($evaluated, fn($b) => $b['bottleneck_count'] > 0);
-
-        // Pilih dari build bersih dulu
         $pool = !empty($cleanBuilds) ? $cleanBuilds : $warningBuilds;
 
         if ($mode === 'max_budget') {
-            // Max budget: score tertinggi, jika sama pilih yang harganya lebih tinggi (habiskan budget)
-            usort($pool, function ($a, $b) {
-                if ($a['performance_score'] !== $b['performance_score']) {
-                    return $b['performance_score'] - $a['performance_score'];
-                }
-                return $b['total_price'] - $a['total_price']; // habiskan budget
+            // Max budget: prioritas score tinggi, bonus untuk habiskan budget
+            // Formula: score + (score * budget_usage * 0.2)
+            // Contoh: score 75, usage 95% → 75 + (75*0.95*0.2) = 89.25
+            //         score 80, usage 70% → 80 + (80*0.70*0.2) = 91.2 (menang)
+            usort($pool, function ($a, $b) use ($budget) {
+                $usageA = $a['total_price'] / $budget;
+                $usageB = $b['total_price'] / $budget;
+                
+                $valueA = $a['performance_score'] + ($a['performance_score'] * $usageA * 0.2);
+                $valueB = $b['performance_score'] + ($b['performance_score'] * $usageB * 0.2);
+                
+                return $valueB <=> $valueA;
             });
         } else {
-            // Balanced: score tertinggi (score sudah memperhitungkan price efficiency)
-            usort($pool, fn($a, $b) => $b['performance_score'] - $a['performance_score']);
+            // Balanced: maksimalkan score dengan pertimbangan efisiensi harga
+            // Formula: score * (1 + efficiency_bonus)
+            // Efficiency bonus: 0-20% tergantung seberapa hemat budget
+            usort($pool, function ($a, $b) use ($budget) {
+                $efficiencyA = 1 - ($a['total_price'] / $budget); // 0-1
+                $efficiencyB = 1 - ($b['total_price'] / $budget);
+                
+                // Bonus maksimal 15% untuk build yang hemat
+                $valueA = $a['performance_score'] * (1 + $efficiencyA * 0.15);
+                $valueB = $b['performance_score'] * (1 + $efficiencyB * 0.15);
+                
+                return $valueB <=> $valueA;
+            });
         }
 
         $best = array_values($pool)[0];
 
-        $totalPrice = $best['total_price'];
-
         return [
             'success' => true,
-            'message' => $this->getBuildMessage($mode, $best['performance_score'], $totalPrice, $budget),
+            'message' => $this->getBuildMessage($mode, (int)$best['performance_score'], $best['total_price'], $budget),
             'components' => $best['components'],
-            'total_price' => $totalPrice,
+            'total_price' => $best['total_price'],
             'budget' => $budget,
-            'budget_used_percent' => round(($totalPrice / $budget) * 100, 1),
+            'budget_used_percent' => round(($best['total_price'] / $budget) * 100, 1),
             'use_case' => $useCase,
             'mode' => $mode,
             'bottleneck_warnings' => $best['bottleneck_warnings'],
-            'performance_score' => $best['performance_score'],
+            'performance_score' => (int)$best['performance_score'],
             'missing_categories' => [],
             'has_warning' => $best['bottleneck_count'] > 0,
         ];
@@ -504,7 +656,7 @@ class BuildRecommenderService
 
         $detail = match ($reason) {
             'support' => "Komponen pendukung ({$missingLabel}) tidak ditemukan dalam budget.",
-            'no_anchor_budget' => "Budget habis untuk komponen pendukung - tidak cukup untuk CPU, GPU, dan Motherboard.",
+            'no_anchor_budget' => "Budget habis untuk komponen pendukung — tidak cukup untuk CPU, GPU, dan Motherboard.",
             'anchor' => "Komponen utama ({$missingLabel}) tidak ditemukan dalam sisa budget.",
             default => "Beberapa komponen tidak ditemukan: {$missingLabel}.",
         };
@@ -518,6 +670,7 @@ class BuildRecommenderService
             'success' => false,
             'message' => 'Belum ada build yang sesuai kebutuhanmu.',
             'detail' => $detail,
+            'suggestion' => "Budget minimum yang disarankan adalah sekitar Rp " . number_format($minBudget, 0, ',', '.') . ".",
             'missing_categories' => $missingCategories,
             'components' => $partialComponents,
             'total_price' => 0,
@@ -556,13 +709,13 @@ class BuildRecommenderService
         $usedPercent = round(($totalPrice / $budget) * 100);
 
         if ($mode === 'max_budget') {
-            return "Build performa maksimal - menggunakan {$usedPercent}% budget dengan score {$score}/100.";
+            return "Build performa maksimal — menggunakan {$usedPercent}% budget dengan score {$score}/100.";
         }
 
         if ($score >= 80)
-            return "Build sangat worth it - performa tinggi dengan budget efisien ({$usedPercent}% terpakai).";
+            return "Build sangat worth it — performa tinggi dengan budget efisien ({$usedPercent}% terpakai).";
         if ($score >= 60)
-            return "Build solid - performa baik untuk harganya ({$usedPercent}% budget terpakai).";
-        return "Build ditemukan - pertimbangkan naikkan budget untuk performa lebih baik ({$usedPercent}% terpakai).";
+            return "Build solid — performa baik untuk harganya ({$usedPercent}% budget terpakai).";
+        return "Build ditemukan — pertimbangkan naikkan budget untuk performa lebih baik ({$usedPercent}% terpakai).";
     }
 }
